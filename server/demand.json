@@ -1,0 +1,12 @@
+{
+    "month": 0,
+    "year": 0,
+    "move-in" : 0,
+    "move-out" :0,
+    "net" : 0,
+    "call": 0,
+    "drive-by": 0,
+    "loyalty": 0,
+    "referral": 0,
+    "webform": 0
+}
