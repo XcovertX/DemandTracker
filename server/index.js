@@ -74,6 +74,77 @@ app.get("/occupancy", async (req, res) => {
 app.post("/occupancy", async (req, res) => {
 
     let occupancyData = JSON.parse(await fs.readFile(occupancyFile, "utf-8"));
+    let demandData = JSON.parse(await fs.readFile(demandFile, "utf-8"));
+
+    const reqBody = Object.entries(req.body).map(([name, value]) => {
+        return {
+            name,
+            value
+        }
+    });
+
+    console.log(reqBody.length);
+
+    for (let i = 0; i < reqBody.length; i++) {
+
+        if(reqBody[i].name == "add") {
+            let splitRes = split(reqBody[i].value);
+            const occupancyType = splitRes[0];
+            const unitNumber = splitRes[1];
+
+            if(occupancyType == "storage") {
+
+                occupancyData.storage[unitNumber]++;
+                demandData["storageMoveIn"]++;
+                
+            } else if (occupancyType == "parking") {
+
+                occupancyData.parking[unitNumber]++;
+                demandData["parkingMoveIn"]++;
+
+            } else {
+
+                console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+            }
+
+            await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+
+        } else if(reqBody[i].name == "subtract") {
+
+            let splitRes = split(reqBody[i].value);
+            const occupancyType = splitRes[0];
+            const unitNumber = splitRes[1];
+
+            if(occupancyType == "storage") {
+
+                occupancyData.storage[unitNumber]--;
+                demandData["storageMoveIn"]--;
+                
+            } else if (occupancyType == "parking") {
+
+                occupancyData.parking[unitNumber]--;
+                demandData["parkingMoveIn"]--;
+
+            } else {
+
+                console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+            }
+
+            await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+        
+        } else {
+
+            console.log("request body contains a name other than 'add' or 'subtract'.");
+        }
+        res.end();
+    }
+})
+
+
+app.post("/demand", async (req, res) => {
+
+    let occupancyData = JSON.parse(await fs.readFile(occupancyFile, "utf-8"));
+    let demandData = JSON.parse(await fs.readFile(demanFile, "utf-8"));
     let splitRes = split(req.body.add);
     const occupancyType = splitRes[0];
     const unitNumber = splitRes[1];
@@ -89,14 +160,10 @@ app.post("/occupancy", async (req, res) => {
     } else {
 
         console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
-
     }
-    // occupancyData["storage.5x5u"]++;
 
     await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
-
     res.end();
-
 })
 
 app.listen(3000, () => console.log("The server is now running."))
