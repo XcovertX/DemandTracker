@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
+const { stringify } = require("querystring");
 
 const app = express();
 const demandFile = path.join(__dirname, "demand.json");
@@ -39,10 +40,6 @@ app.get("/occupancy", async (req, res) => {
     const maxParkingOccupancy = Object.values(occupancyData.parkingMax)
         .reduce((maxParkingOccupancy, n) => maxParkingOccupancy += n, 0);
 
-
-    
-
-
     const storageOccupancyData = Object.entries(occupancyData.storage).map(([unitSize, count]) => {
         return {
             unitSize,
@@ -67,19 +64,43 @@ app.get("/occupancy", async (req, res) => {
     const maxParkingOccupancyData = Object.entries(occupancyData.parkingMax).map(([unitSize, count]) => {
         return {
             unitSize,
-            count 
+            count
         }
     });
 
-    console.log(maxStorageOccupancy);
-    console.log(maxParkingOccupancy);
-
-    console.log(storageOccupancyData);
-    console.log(parkingOccupancyData);
-    console.log(maxStorageOccupancyData);
-    console.log(maxParkingOccupancyData);
-
-    res.end();
+    res.json(parkingOccupancyData);
 });
 
+app.post("/occupancy", async (req, res) => {
+
+    let occupancyData = JSON.parse(await fs.readFile(occupancyFile, "utf-8"));
+    let splitRes = split(req.body.add);
+    const occupancyType = splitRes[0];
+    const unitNumber = splitRes[1];
+
+    if(occupancyType == "storage") {
+
+        occupancyData.storage[unitNumber]++;
+        
+    } else if (occupancyType == "parking") {
+
+        occupancyData.parking[unitNumber]++;
+
+    } else {
+
+        console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+
+    }
+    // occupancyData["storage.5x5u"]++;
+
+    await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+
+    res.end();
+
+})
+
 app.listen(3000, () => console.log("The server is now running."))
+
+function split(s) {
+    return s.split(".");
+}
