@@ -83,8 +83,6 @@ app.post("/occupancy", async (req, res) => {
         }
     });
 
-    console.log(reqBody.length);
-
     for (let i = 0; i < reqBody.length; i++) {
 
         if(reqBody[i].name == "add") {
@@ -96,18 +94,20 @@ app.post("/occupancy", async (req, res) => {
 
                 occupancyData.storage[unitNumber]++;
                 demandData["storageMoveIn"]++;
+                await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
                 
             } else if (occupancyType == "parking") {
 
                 occupancyData.parking[unitNumber]++;
                 demandData["parkingMoveIn"]++;
+                await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
 
             } else {
 
-                console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+                console.log("The occupancy type was neither storage or parking: " + occupancyType);
             }
-
-            await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
 
         } else if(reqBody[i].name == "subtract") {
 
@@ -118,51 +118,86 @@ app.post("/occupancy", async (req, res) => {
             if(occupancyType == "storage") {
 
                 occupancyData.storage[unitNumber]--;
-                demandData["storageMoveIn"]--;
+                demandData["storageMoveOut"]++;
+                await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
                 
             } else if (occupancyType == "parking") {
 
                 occupancyData.parking[unitNumber]--;
-                demandData["parkingMoveIn"]--;
+                demandData["parkingMoveOut"]++;
+                await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
 
             } else {
 
-                console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+                console.log("The occupancy type was neither storage or parking: " + occupancyType);
             }
-
-            await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
         
         } else {
 
-            console.log("request body contains a name other than 'add' or 'subtract'.");
+            console.log("request body contains a name other than 'add' or 'subtract': " + reqBody[i].name);
         }
         res.end();
     }
 })
 
-
 app.post("/demand", async (req, res) => {
 
-    let occupancyData = JSON.parse(await fs.readFile(occupancyFile, "utf-8"));
-    let demandData = JSON.parse(await fs.readFile(demanFile, "utf-8"));
-    let splitRes = split(req.body.add);
-    const occupancyType = splitRes[0];
-    const unitNumber = splitRes[1];
+    let demandData = JSON.parse(await fs.readFile(demandFile, "utf-8"));
 
-    if(occupancyType == "storage") {
+    const reqBody = Object.entries(req.body).map(([name, value]) => {
+        return {
+            name,
+            value
+        }
+    });
 
-        occupancyData.storage[unitNumber]++;
-        
-    } else if (occupancyType == "parking") {
+    const instruction = reqBody[0].name;
+    const demandType  = reqBody[0].value;
 
-        occupancyData.parking[unitNumber]++;
+    if(instruction == "add" || instruction == "subtract") {
 
-    } else {
+        if(isValidDemandType(demandType)){
 
-        console.log("The occupancy type was neither storage or parking. Please enter a valid POST");
+            if(instruction == "add"){
+
+                demandData.demand[demandType]++;
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
+                console.log("Added demand to " + reqBody.value);
+
+            } else if (instruction == "subtract") {
+
+                demandData.demand[demandType]--;
+                await fs.writeFile(demandFile, JSON.stringify(demandData));
+                console.log("Subtracted demand from " + demandType);
+
+            } else {
+
+                console.log(demandType + " is not a demand type. Please enter a valid demand POST");
+            }
+
+        } else {
+
+            console.log(reqBody.value + " is not a known damand type.")
+        }
+
+    } else if( instruction == "changeDate" ) {
+
+        if(demandData.month == 12) {
+
+            demandData.month = 1;
+            demandData.year++;
+
+        } else {
+
+            demandData.month++;
+        }
+
+        await fs.writeFile(demandFile, JSON.stringify(demandData));
+        console.log("The new month/year is: " + demandData.month + "/" + demandData.year);
+
     }
-
-    await fs.writeFile(occupancyFile, JSON.stringify(occupancyData));
     res.end();
 })
 
@@ -170,4 +205,14 @@ app.listen(3000, () => console.log("The server is now running."))
 
 function split(s) {
     return s.split(".");
+}
+
+function isValidDemandType(reqDemand) {
+    return (
+        reqDemand == "webform"  ||
+        reqDemand == "call"     ||
+        reqDemand == "referral" ||
+        reqDemand == "driveBy"  ||
+        reqDemand == "loyaly"
+    )
 }

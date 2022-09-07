@@ -1,10 +1,11 @@
 {
-    "month": 0,
-    "year": 0,
+    "month": 11,
+    "year": 22,
     "storageMoveIn": 0,
     "storageMoveOut": 0,
     "parkingMoveIn": 0,
     "parkingMoveOut": 0,
+
     "demand":
     {
         "call": 3,
