@@ -6,12 +6,21 @@ const { stringify } = require("querystring");
 const app = express();
 const demandFile = path.join(__dirname, "demand.json");
 const occupancyFile = path.join(__dirname, "occupancy.json");
+const waitlistFile = path.join(__dirname, "waitlist.json")
 
 // posting support
 app.use(express.urlencoded({ extended: true }));
 
+// enable CORS
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
+})
+
 app.get("/demand", async (req, res) => {
+    // message("madeit");
     let demandData = JSON.parse(await fs.readFile(demandFile, "utf-8"));
+    let waitlistData = JSON.parse(await fs.readFile(waitlistFile, "utf-8"));
     const totalDemand = Object.values(demandData.demand).reduce((totalDemand, n) => totalDemand += n, 0);
 
     demandData = Object.entries(demandData.demand).map(([label, value]) => {
@@ -22,7 +31,14 @@ app.get("/demand", async (req, res) => {
     })
 
     console.log(demandData);
-    res.end();
+    res.json(demandData);
+});
+
+app.get("/waitlist", async (req, res) => {
+    let waitlistData = JSON.parse(await fs.readFile(waitlistFile, "utf-8"));
+
+    console.log(waitlistData);
+    res.json(waitlistData);
 });
 
 app.get("/occupancy", async (req, res) => {
@@ -193,7 +209,6 @@ app.post("/demand", async (req, res) => {
 
             demandData.month++;
         }
-
         await fs.writeFile(demandFile, JSON.stringify(demandData));
         console.log("The new month/year is: " + demandData.month + "/" + demandData.year);
 

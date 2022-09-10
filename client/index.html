@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Unit Demand Tracker</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <div class="demandData"></div>
+    <div class="waitlist"></div>
+<div class="demand">
+    <h1>Wait List</h1>
+    <!-- A button to open the popup form -->
+    <button class="open-button" onclick="openForm()">Add</button>
+
+    <!-- The form -->
+    <div class="form-popup" id="addForm">
+    <form class="form-container">
+        <h1>Customer Information</h1>
+
+        <label for="name"><b>Customer Name</b></label>
+        <br>
+        <input id="customerName" type="text" placeholder="Enter Customer Name" name="name" required>
+        <br>
+        <label for="phoneNum"><b>Phone Number</b></label>
+        <br>
+        <input id="customerPhoneNumber" type="tel" placeholder="Enter Phone Number" name="phoneNum" required>
+        <br>
+        <label for="email"><b>Email</b></label>
+        <br>
+        <input id="customerEmail" type="text" placeholder="Enter Email" name="email" required>
+        <br>
+        <label for="needBy"><b>Need By Date</b></label>
+        <br>
+        <input id="needByDate" type="date" placeholder="Need By Date" name="needByDate" required>
+        <br>
+        <label for="customerSP"><b>Storage or Parking</b></label>
+        <br>
+        <div class="custom-select" style="width:200px;">
+            <select id="ddl" name="parStorSel" onchange="configureDropDownLists(this, document.getElementById('ddl2'))">
+                <option selected="">Select and option</option>
+                <option value="storage">Storage</option>
+                <option value="parking">Parking</option>
+            </select>
+        </div>
+        <br> 
+
+        <label for="unitSelect"><b>Unit</b></label>
+        <br>
+        <div class="custom-select-2" style="width:200px;">
+            <select id="ddl2" name="unitSelect">
+                <option selected="">Select and option</option>
+            </select>
+        </div>
+        <br>
+        <label for="demandSelect"><b>Demand Type</b></label>
+        <br>
+        <div class="custom-select-3" style="width:200px;">
+            <select id="demandSelect" name="demandSelect">
+                <option selected="">Select and option</option>
+                <option value="call">Call</option>
+                <option value="webform">Webform</option>
+                <option value="driveBy">Drive By</option>
+                <option value="referral">Referral</option>
+                <option value="loyalty">Loyalty</option>
+            </select>
+        </div>
+        <br>
+        <button type="submit" class="btn" onclick="addRowWaitlist()">Add</button> 
+        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+    </form>
+    </div>
+    <table id="storageWaitlist"></table> 
+</div>
+</body>
+</html>

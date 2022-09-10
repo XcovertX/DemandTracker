@@ -1,0 +1,39 @@
+{
+
+    "entries": 
+    [
+        {
+            "dateAdded": "2022-09-02",
+            "customerName": "Dude McGuyman",
+            "phoneNumber": "(425) 877-8411",
+            "email": "dudemcguyman@dmgm.com",
+            "storageOrParking": "storage",
+            "unit":"10x10g",
+            "demandType": "webform",
+            "needByDate": "2022-10-20",
+            "addedBy": "J.Covert"
+        },
+        {
+            "dateAdded": "2022-09-02",
+            "customerName": "Dude McGuyman",
+            "phoneNumber": "(425) 877-8411",
+            "email": "dudemcguyman@dmgm.com",
+            "storageOrParking": "storage",
+            "unit":"10x10g",
+            "demandType": "webform",
+            "needByDate": "2022-10-20",
+            "addedBy": "J.Covert"
+        },
+        {
+            "dateAdded": "2022-09-02",
+            "customerName": "Dude McGuyman",
+            "phoneNumber": "(425) 877-8411",
+            "email": "dudemcguyman@dmgm.com",
+            "storageOrParking": "storage",
+            "unit":"10x10g",
+            "demandType": "webform",
+            "needByDate": "2022-10-20",
+            "addedBy": "J.Covert"
+        }
+    ]
+}
