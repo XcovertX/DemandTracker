@@ -1,13 +1,13 @@
-class Demand {
+class WaitList {
     constructor(root, title) {
         this.root = root;
-        this.selected = sessionStorage.getItem("demand-selected");
         this.endpoint = "http://localhost:3000/waitlist";
 
         var d = new Date();
         var dateMsg = "Today is " + formatDate(d) + "."
 
-        this.root.insertAdjacentHTML("afterbegin", `
+        this.root.insertAdjacentHTML("afterbegin", 
+        `
             <div class="demand__title">${ title }</div>
             <div class="demand__title">${ dateMsg }</div>
         `);
@@ -19,14 +19,14 @@ class Demand {
         
         try {
         const response = await fetch(this.endpoint);
-        const data =  await response.json();
+        const data =  await response.json();  
         
-        this.root.querySelectorAll(".demand__option").forEach(option => {
-            option.remove();
-        });  
-        
+
+        buildLoginForm();
+        populateUserInfo();
         buildWaitlistHeader();
         populateWaitlist(data.entries);
+        buildAddForm();
         
         } catch(err) {
             alert("ERROR: " + err.message);
@@ -34,10 +34,15 @@ class Demand {
     }
 }
 
-const d = new Demand(
-    document.querySelector(".demand"),
+const w = new WaitList(
+    document.querySelector(".waitlist"),
     "Welcome, J.Covert"
 );
+
+function populateUserInfo(){
+    const userInfoHeader = document.getElementById("userInfo");
+    userInfoHeader.innerText = "Logged in as J.Covert";
+}
 
 function populateDemandlist(obj) {
 
@@ -90,6 +95,70 @@ function populateWaitlistRow(row, data) {
     cell.innerHTML = data.needByDate;
     cell = row.insertCell();
     cell.innerHTML = data.addedBy;
+}
+
+function buildAddForm() {
+
+    var addForm = document.getElementById("addForm");
+    addForm.innerHTML =
+    `
+    <form class="form-container">
+        <h1>Customer Information</h1>
+
+        <label for="name"><b>Customer Name</b></label>
+        <br>
+        <input id="customerName" type="text" placeholder="Enter Customer Name" name="name" required>
+        <br>
+        <label for="phoneNum"><b>Phone Number</b></label>
+        <br>
+        <input id="customerPhoneNumber" type="tel" placeholder="Enter Phone Number" name="phoneNum" required>
+        <br>
+        <label for="email"><b>Email</b></label>
+        <br>
+        <input id="customerEmail" type="text" placeholder="Enter Email" name="email" required>
+        <br>
+        <label for="needBy"><b>Need By Date</b></label>
+        <br>
+        <input id="needByDate" type="date" placeholder="Need By Date" name="needByDate" required>
+        <br>
+        <label for="customerSP"><b>Storage or Parking</b></label>
+        <br>
+        <div class="custom-select" style="width:200px;">
+            <select id="ddl" name="parStorSel" onchange="configureDropDownLists(this, document.getElementById('ddl2'))">
+                <option selected="">Select and option</option>
+                <option value="storage">Storage</option>
+                <option value="parking">Parking</option>
+            </select>
+        </div>
+        <br> 
+
+        <label for="unitSelect"><b>Unit</b></label>
+        <br>
+        <div class="custom-select-2" style="width:200px;">
+            <select id="ddl2" name="unitSelect">
+                <option selected="">Select and option</option>
+            </select>
+        </div>
+        <br>
+        <label for="demandSelect"><b>Demand Type</b></label>
+        <br>
+        <div class="custom-select-3" style="width:200px;">
+            <select id="demandSelect" name="demandSelect">
+                <option selected="">Select and option</option>
+                <option value="call">Call</option>
+                <option value="webform">Webform</option>
+                <option value="driveBy">Drive By</option>
+                <option value="referral">Referral</option>
+                <option value="loyalty">Loyalty</option>
+            </select>
+        </div>
+        <br>
+        <button type="submit" class="btn" onclick="addRowWaitlist()">Save</button> 
+        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+    </form>
+    </div>
+    
+    `
 }
 
 function openForm() {
@@ -202,17 +271,94 @@ function configureDropDownLists(ddl1, ddl2) {
   
   }
   
-  function createOption(ddl, text, value) {
+function createOption(ddl, text, value) {
     var opt = document.createElement('option');
     opt.value = value;
     opt.text = text;
     ddl.options.add(opt);
   }
 
-  function message(msg) {
+function message(msg) {
     alert(msg);
   }
 
-/* If the user clicks anywhere outside the select box,
-then close all select boxes: */
-// document.addEventListener("click", closeAllSelect);
+  function buildLoginForm() {
+    const loginForm = document.getElementById("loginForm");
+    loginForm.innerHTML =
+    `
+    <div id="id01" class="modal">
+        <span onclick="document.getElementById('id01').style.display='none'"
+        class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content animate" action="/action_page.php">
+
+            <div class="container">
+                <label for="uname"><b>Username / Email</b></label>
+                <input type="text" placeholder="Enter Username or Email" name="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <button type="submit" class="submitbtn">Login</button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                <div class="pswcnaContainer">
+                    <span class="psw"><a href="#">Forgot password?</a></span>
+                    <span class="cna"><a href="#">Create new account</a></span>
+                </div>
+            </div>
+        </form>
+    </div>
+    `
+
+}
+
+function buildAddAccountForm() {
+    const loginForm = document.getElementById("loginForm");
+    loginForm.innerHTML =
+    `
+    <div id="id01" class="modal">
+        <span onclick="document.getElementById('id01').style.display='none'"
+        class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content animate" action="/action_page.php">
+            <div class="imgcontainer">
+            <img src="img_avatar2.png" alt="Avatar" class="avatar">
+            </div>
+
+            <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="uname" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required>
+
+            <button type="submit">Login</button>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Remember me
+            </label>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            <span class="psw">Forgot <a href="#">Forgot password?</a></span>
+            </div>
+        </form>
+    </div>
+    `
+
+}
+
+function openLoginForm() {
+
+    document.getElementById("id01").style.display = "block";
+}
+
+function closeLoginForm() {
+
+    document.getElementById("id01").style.display = "none";
+}
