@@ -4,13 +4,15 @@ class WaitList {
         this.endpoint = "http://localhost:3000/waitlist";
 
         var d = new Date();
-        var dateMsg = "Today is " + formatDate(d) + "."
+        var dateMsg = "Today's date: " + formatDate(d);
 
-        this.root.insertAdjacentHTML("afterbegin", 
-        `
-            <div class="demand__title">${ title }</div>
-            <div class="demand__title">${ dateMsg }</div>
-        `);
+        document.getElementById("userInfoDate").innerText = dateMsg;
+
+        // this.root.insertAdjacentHTML("afterbegin", 
+        // `
+        //     <div class="demand__title">${ title }</div>
+        //     <div class="demand__title">${ dateMsg }</div>
+        // `);
 
         this._refresh();
     }
@@ -65,7 +67,6 @@ function buildWaitlistHeader() {
     `
 }
 
-// populates waitlist
 function populateWaitlist(waitlist) {
 
     var table = document.getElementById("storageWaitlist");

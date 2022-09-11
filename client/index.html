@@ -9,14 +9,19 @@
     <script src="main.js" defer></script>
 </head>
 <body>
-    <div class="waitlist">
-        <!-- add button to open the login popup form -->
-        <button id="login-logout" class="login-button" onclick="openLoginForm()">Login</button>
-        <!-- sign up button to open the add account popup form -->
-        <button id="signUpButton" class="signUpButton" onclick="openLoginForm()">Sign Up</button>
-        <h4 id="userInfo" align="right"></h4>
-        <h1>Wait List</h1>
 
+    <div class="header">
+        <div class="loginContainer">
+            <h4 id="userInfo" class="userInfo"></h4>
+            <h5 id="userInfoDate" class="userInfo"></h5>
+            <!-- add button to open the login popup form -->
+            <button id="loginLogout" class="loginButton" onclick="openLoginForm()">Login</button>
+            <!-- sign up button to open the add account popup form -->
+            <button id="signUpButton" class="signUpButton" onclick="openLoginForm()">Sign Up</button>
+        </div>
+        <h1>Wait List</h1>
+    </div>
+    <div class="waitlist">
         <!-- add button to open the popup form -->
         <button class="open-button" onclick="openForm()">Add</button>
         <!-- add to waitlist form -->

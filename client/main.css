@@ -23,6 +23,21 @@ td, th {
     background-color: #ffc107;
   }
 
+  /* login container settings */
+  .loginContainer {
+    float: right;
+  }
+
+  .loginContainer button {
+    float: right;
+    margin: 0px 3px 3px 0px;
+  }
+
+  .userInfo {
+    text-align: right;
+    margin: 0px 3px 3px 0px; 
+  }
+
   /* The popup form - hidden by default */
  .form-popup {
     display: none;
@@ -230,7 +245,7 @@ input[type=password] {
   box-sizing: border-box;
 }
 
-/* Set a style for all buttons */
+/* Set a style for submit button */
 .submitbtn {
   background-color: #04AA6D;
   color: white;
@@ -241,7 +256,7 @@ input[type=password] {
   width: auto;
 }
 
-/* Extra style for the cancel button (red) */
+/* Set a style for cancel button */
 .cancelbtn {
   background-color: #f44336;
   color: white;
