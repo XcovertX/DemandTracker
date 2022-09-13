@@ -1,12 +1,1 @@
-{
-    "users":
-    [
-        {
-            "firstName": "",
-            "lastName": "",
-            "userName": "",
-            "email": "",
-            "password": ""
-        }
-    ]
-}
+{"users":[{"firstName":"Patrick","lastName":"Gilroy","userName":"user1","email":"patrick@stor-house.com","password":"pass1","session":{"cookie":{"originalMaxAge":86400000,"expires":"2022-09-13T21:54:50.266Z","secure":false,"httpOnly":true,"path":"/","sameSite":"lax"},"userid":"user1"},"positionType":"Owner"},{"firstName":"James","lastName":"Covert","userName":"jcovert2","email":"James@stor-house.com","password":"qazWSX((00","session":{"cookie":{"originalMaxAge":86400000,"expires":"2022-09-13T19:26:01.466Z","secure":true,"httpOnly":true,"path":"/","sameSite":"none"},"userid":"jcovert2"},"positionType":"Manager"},{"firstName":"Ajit","lastName":"Gill","userName":"user1","email":"ajit@stor-house.com","password":"pass1","session":"","positionType":"General Manager"},{"firstName":"Virginia","lastName":"Cornett","userName":"user1","email":"ginger@stor-house.com","password":"pass1","session":"","positionType":"Assistant Manager"}]}

@@ -1,11 +1,15 @@
 class WaitList {
-    constructor(root, title) {
+    constructor(root, user) {
         this.root = root;
         this.endpoint = "http://localhost:3000/waitlist";
 
-        var d = new Date();
-        var dateMsg = "Today's date: " + formatDate(d);
 
+        let greeting = "Welcome " + user.firstName + "!";
+        let d = new Date();
+        let dateMsg = "Today's date: " + formatDate(d);
+
+
+        document.getElementById("userInfo").innerText = greeting;
         document.getElementById("userInfoDate").innerText = dateMsg;
 
         // this.root.insertAdjacentHTML("afterbegin", 
@@ -16,6 +20,7 @@ class WaitList {
 
         this._refresh();
     }
+    
 
     async _refresh() {
         
@@ -36,9 +41,9 @@ class WaitList {
     }
 }
 
-const w = new WaitList(
+let w = new WaitList(
     document.querySelector(".waitlist"),
-    "Welcome, J.Covert"
+    "Welcome"
 );
 
 function populateUserInfo(){
@@ -292,18 +297,18 @@ function message(msg) {
         class="close" title="Close Modal">&times;</span>
 
         <!-- Modal Content -->
-        <form class="modal-content animate" action="/action_page.php">
+        <form class="modal-content animate">
 
             <div class="container">
                 <label for="uname"><b>Username / Email</b></label>
-                <input type="text" placeholder="Enter Username or Email" name="uname" required>
+                <input id="loginInput" type="text" placeholder="Enter Username or Email" required>
 
                 <label for="psw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="psw" required>
+                <input id="passwordInput" type="password" placeholder="Enter Password" required>
 
-                <button type="submit" class="submitbtn">Login</button>
+                <button class="submitbtn" onclick="loginRequest()">Login</button>
                 <label>
-                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                    <input type="checkbox" checked="checked"> Remember me
                 </label>
                 <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
                 <div class="pswcnaContainer">
@@ -315,6 +320,42 @@ function message(msg) {
     </div>
     `
 
+}
+
+async function loginRequest() {
+    const un = document.getElementById("loginInput").value;
+    const pw = document.getElementById("passwordInput").value;
+    let formData = new FormData();
+    formData.append("username", un);
+    formData.append("password", pw);
+    
+    userData = Object.fromEntries(formData.entries());
+
+    const response = await fetch("http://localhost:3000/login", {
+    method: 'POST',
+    headers: {
+        'Accept'      : 'application/json',
+        'Content-Type': 'application/json',
+    },
+    mode: 'cors',
+    credentials: 'include',
+    body: JSON.stringify(userData)
+    })
+    let obj = await response.json();
+    alert(obj);
+}
+
+function logoutRequest() {
+
+    const response = fetch("http://localhost:3000/logout", {
+    method: 'GET',
+    headers: {
+        'Accept'      : 'application/json',
+        'Content-Type': 'application/json',
+    },
+    mode: 'cors',
+    credentials: 'include'
+    })
 }
 
 function buildAddAccountForm() {

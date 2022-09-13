@@ -1,24 +1,75 @@
-const express = require("express");
-const fs = require("fs").promises;
-const path = require("path");
+const express       = require("express");
+const asyncHandler  = require('express-async-handler');
+                      require('express-async-errors');
+const cookieParser  = require("cookie-parser");
+const sessions      = require("express-session");
+const fs            = require("fs").promises;
+const path          = require("path");
 const { stringify } = require("querystring");
+var cors            = require('cors');
 
-const app = express();
-const demandFile = path.join(__dirname, "demand.json");
+const app    = express();
+const oneDay = 1000 * 24 * 60 * 60;
+var session;
+
+const demandFile    = path.join(__dirname, "demand.json");
 const occupancyFile = path.join(__dirname, "occupancy.json");
-const waitlistFile = path.join(__dirname, "waitlist.json")
+const waitlistFile  = path.join(__dirname, "waitlist.json");
+const userFile      = path.join(__dirname, "user-profiles.json");
+
+// session middleware
+app.use(sessions({
+    secret: "twtwtwtwtwtwt",
+    saveUninitialized: true,
+    cookie: {maxAge: oneDay
+    },
+    resave: false
+}));
 
 // posting support
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serving public file
+app.use(express.static(__dirname));
+
+// Cookie parser middleware
+app.use(cookieParser());
+
 // enable CORS
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    next();
+app.use(cors({
+    origin: 'http://localhost:5500',
+    credentials: true,
+    exposedHeaders: ['Content-Type'],
+}));
+
+app.get("/", (req, res) => {
+    session=req.session;
+    if(session.userid) {
+        res.send("Welcome User!");
+    } else {
+        res.sendFile("index.html", {root:__dirname});
+    }
 })
 
+app.post("/login", asyncHandler(async (req, res) => {
+    console.log(req.body);
+    let userData = JSON.parse(await fs.readFile(userFile, "utf-8"));
+    const un = req.body.username;
+    const pw = req.body.password;
+    const user = getUser(un, pw, userData);
+    if(user == -1) {
+        res.send("Invalid username or password.");
+    } else {
+        session = req.session;
+        session.userid = user.userName;
+        console.log(req.session);
+        res.json(user);
+    }
+}));
+
 app.get("/demand", async (req, res) => {
-    // message("madeit");
+
     let demandData = JSON.parse(await fs.readFile(demandFile, "utf-8"));
     let waitlistData = JSON.parse(await fs.readFile(waitlistFile, "utf-8"));
     const totalDemand = Object.values(demandData.demand).reduce((totalDemand, n) => totalDemand += n, 0);
@@ -37,7 +88,6 @@ app.get("/demand", async (req, res) => {
 app.get("/waitlist", async (req, res) => {
     let waitlistData = JSON.parse(await fs.readFile(waitlistFile, "utf-8"));
 
-    console.log(waitlistData);
     res.json(waitlistData);
 });
 
@@ -86,6 +136,11 @@ app.get("/occupancy", async (req, res) => {
 
     res.json(parkingOccupancyData);
 });
+
+app.get("/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/");
+})
 
 app.post("/occupancy", async (req, res) => {
 
@@ -216,6 +271,8 @@ app.post("/demand", async (req, res) => {
     res.end();
 })
 
+
+
 app.listen(3000, () => console.log("The server is now running."))
 
 function split(s) {
@@ -230,4 +287,16 @@ function isValidDemandType(reqDemand) {
         reqDemand == "driveBy"  ||
         reqDemand == "loyaly"
     )
+}
+
+function getUser(un, pw, userData) {
+
+    for(const user of userData.users) {
+        if(user.userName == un && user.password == pw) {
+            console.log("Found " + user.userName + "!");
+            return user;
+        }
+    }
+    console.log("User " + un + " not found.")
+    return -1;
 }
